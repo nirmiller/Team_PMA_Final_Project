@@ -8,10 +8,13 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-
+    
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
+        
+        _graphics.PreferredBackBufferHeight = 800;
+        _graphics.PreferredBackBufferWidth = 1200;
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
