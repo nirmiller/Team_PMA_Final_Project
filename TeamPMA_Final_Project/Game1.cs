@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace TeamPMA_Final_Project;
-//cosmo
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
