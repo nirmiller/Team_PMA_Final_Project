@@ -25,7 +25,6 @@
 /processorParam:TextureFormat=Color
 /build:imgs/map.jpg
 
-
 #begin imgs/off_button2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -50,7 +49,7 @@
 /processorParam:TextureFormat=Color
 /build:imgs/on_button.png
 
-#begin imgs/short_building.png
+#begin imgs/short_building
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -62,7 +61,7 @@
 /processorParam:TextureFormat=Color
 /build:imgs/short_building.png
 
-#begin imgs/tall_buildig.png
+#begin imgs/tall_building
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -72,5 +71,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:imgs/tall_buildig.png
+/build:imgs/tall_building.png
 

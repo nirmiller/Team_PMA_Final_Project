@@ -7,75 +7,173 @@ namespace TeamPMA_Final_Project;
 
 public class HeatMap
 {
-    
     private Texture2D _baseMap;
     private Texture2D _buildingShort;
     private Texture2D _buildingTall;
 
-    private List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation;
-    
+    private Dictionary<string, (Vector2 position, bool isTallBuilding)> _buildingInformation;
+    private Dictionary<string, float> _dataPoints;
 
-    private List<(string buildingName, float heatValue)> _dataPoints;
+    private List<Bubble> _bubbles;
 
     private Vector2 _mapPosition;
+
+    private float _mapScale;
+    private Vector2 _centeredMapPosition;
+    private float _buildingScale;
 
     public HeatMap(
         Texture2D baseMap,
         Texture2D buildingShort,
         Texture2D buildingTall,
-        List<(Vector2 position, string buildingName, bool isTallBuilding)> buildingInformation, Vector2 mapPosition)
+        List<(Vector2 position, string buildingName, bool isTallBuilding)> buildingInformation,
+        Vector2 mapPosition)
     {
         _baseMap = baseMap;
         _buildingShort = buildingShort;
         _buildingTall = buildingTall;
-        _buildingInformation = buildingInformation;
         _mapPosition = mapPosition;
-    }
 
-    public void pullData(List<(string buildingName, float value)> dataPoints)
-    {
-        _dataPoints = dataPoints;
-    }
-
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        spriteBatch.Draw(_baseMap, _mapPosition, Color.White);
-
-        int count = _buildingInformation.Count;
-
-        for (int i = 0; i < count; i++)
+        _buildingInformation = new Dictionary<string, (Vector2 position, bool isTallBuilding)>();
+        for (int i = 0; i < buildingInformation.Count; i++)
         {
-            bool isTall = _buildingInformation[i].isTallBuilding;
-            ;
+            string name = buildingInformation[i].buildingName;
+            Vector2 position = buildingInformation[i].position;
+            bool isTall = buildingInformation[i].isTallBuilding;
 
-            Texture2D currentBuilding = isTall ? _buildingTall : _buildingShort;
-
-            Vector2 drawPosition = _buildingInformation[i].position + _mapPosition ;
-
-            drawPosition.X -= currentBuilding.Width / 2f;
-            drawPosition.Y -= currentBuilding.Height / 2f;
-
-            spriteBatch.Draw(currentBuilding, drawPosition, Color.White);
+            _buildingInformation[name] = (position, isTall);
         }
+
+        _dataPoints = new Dictionary<string, float>();
+        _bubbles = new List<Bubble>();
+
+        _mapScale = 1f;
+        _centeredMapPosition = mapPosition;
+        _buildingScale = 1f;
     }
 
-    public void resetMap()
+    public void PullData(Dictionary<string, float> dataPoints)
     {
         _dataPoints.Clear();
+
+        foreach (var kvp in dataPoints)
+        {
+            _dataPoints[kvp.Key] = kvp.Value;
+        }
     }
 
-    // Example: datapoints are heat values at positions
-    public void AnimateHeatMap(GameTime gameTime, bool showMap)
+    private void UpdateMapLayout(int screenWidth, int screenHeight)
     {
-        if (showMap & _dataPoints.Count > 0)
+        float maxMapWidth = screenWidth * 0.8f;
+        float maxMapHeight = screenHeight * 0.8f;
+
+        float mapScaleX = maxMapWidth / _baseMap.Width;
+        float mapScaleY = maxMapHeight / _baseMap.Height;
+        _mapScale = Math.Min(mapScaleX, mapScaleY);
+
+        int scaledMapWidth = (int)(_baseMap.Width * _mapScale);
+        int scaledMapHeight = (int)(_baseMap.Height * _mapScale);
+
+        _centeredMapPosition = new Vector2(
+            (screenWidth - scaledMapWidth) / 2f,
+            (screenHeight - scaledMapHeight) / 2f
+        );
+
+        _buildingScale = _mapScale * 0.2f;
+    }
+
+    public void DrawMap(SpriteBatch spriteBatch, int screenWidth, int screenHeight)
+    {
+        UpdateMapLayout(screenWidth, screenHeight);
+
+        int scaledMapWidth = (int)(_baseMap.Width * _mapScale);
+        int scaledMapHeight = (int)(_baseMap.Height * _mapScale);
+
+        spriteBatch.Draw(
+            _baseMap,
+            new Rectangle(
+                (int)_centeredMapPosition.X,
+                (int)_centeredMapPosition.Y,
+                scaledMapWidth,
+                scaledMapHeight
+            ),
+            Color.White
+        );
+
+        foreach (KeyValuePair<string, (Vector2 position, bool isTallBuilding)> building in _buildingInformation)
         {
-            for (int i = 0; i < _dataPoints.Count; i++)
+            Texture2D currentBuilding = building.Value.isTallBuilding ? _buildingTall : _buildingShort;
+
+            Vector2 scaledBuildingPosition = building.Value.position * _mapScale;
+            Vector2 drawPosition = _centeredMapPosition + scaledBuildingPosition;
+
+            spriteBatch.Draw(
+                currentBuilding,
+                drawPosition,
+                null,
+                Color.White,
+                0f,
+                new Vector2(currentBuilding.Width / 2f, currentBuilding.Height / 2f),
+                _buildingScale,
+                SpriteEffects.None,
+                0f
+            );
+        }
+    }
+
+    public void ResetMap()
+    {
+        _dataPoints.Clear();
+        _bubbles.Clear();
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        foreach (Bubble bubble in _bubbles)
+        {
+            bubble.Update(gameTime);
+        }
+    }
+
+    public void Draw(SpriteBatch spriteBatch, Texture2D bubbleTexture)
+    {
+        foreach (Bubble bubble in _bubbles)
+        {
+            bubble.Draw(spriteBatch, bubbleTexture);
+        }
+    }
+
+    private Vector2 MapToScreen(Vector2 mapPosition)
+    {
+        return _centeredMapPosition + mapPosition * _mapScale;
+    }
+
+    public void AnimateHeatMap(bool showMap, int screenWidth, int screenHeight)
+    {
+        _bubbles.Clear();
+
+        UpdateMapLayout(screenWidth, screenHeight);
+
+        if (showMap && _dataPoints.Count > 0)
+        {
+            float maxRadius = 100f;
+            float growthTime = 2f;
+
+            foreach (var dataPoint in _dataPoints)
             {
-                
+                string name = dataPoint.Key;
+
+                if (_buildingInformation.ContainsKey(name))
+                {
+                    Vector2 bubblePosition = MapToScreen(_buildingInformation[name].position);
+
+                    float value = MathHelper.Clamp(dataPoint.Value, 0f, 1f);
+                    float startRadius = 0f;
+                    float targetRadius = value * maxRadius * _mapScale;
+
+                    _bubbles.Add(new Bubble(bubblePosition, startRadius, targetRadius, growthTime));
+                }
             }
         }
-      
     }
-    
-    
 }
