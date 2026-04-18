@@ -8,6 +8,7 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private ToggleButton rentHeatmapToggle;
     
     public Game1()
     {
@@ -29,6 +30,12 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
+        Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button");
+        Texture2D toggleOffTex = Content.Load<Texture2D>("toggle_off");
+
+        // Initialize the button at X: 50, Y: 50, Width: 100, Height: 50
+        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(50, 50, 100, 50));
+    
 
         // TODO: use this.Content to load your game content here
     }
@@ -38,6 +45,11 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+        // Grab the current mouse state
+        MouseState currentMouse = Mouse.GetState();
+
+        // Update the button logic
+        rentHeatmapToggle.Update(currentMouse);
 
         // TODO: Add your update logic here
 
@@ -49,6 +61,12 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
+        _spriteBatch.Begin();
+    
+        // Draw the button
+        rentHeatmapToggle.Draw(_spriteBatch);
+    
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }
