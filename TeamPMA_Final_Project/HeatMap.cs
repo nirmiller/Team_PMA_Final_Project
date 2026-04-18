@@ -171,7 +171,7 @@ public class HeatMap
                     float startRadius = 0f;
                     float targetRadius = value * maxRadius * _mapScale;
 
-                    _bubbles.Add(new Bubble(bubblePosition, startRadius, targetRadius, growthTime));
+                    _bubbles.Add(new Bubble(bubblePosition, startRadius, targetRadius, growthTime, maxRadius * _mapScale));
                 }
             }
         }

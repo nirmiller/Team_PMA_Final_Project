@@ -29,7 +29,7 @@ public class Game1 : Game
             (new Vector2(760, 210), "BuildingF", true)
         };
     
-    private static Dictionary<string, float> _dataPoints =
+    private static Dictionary<string, float> _amenities =
         new Dictionary<string, float>
         {
             { "BuildingA", 0.2f },
@@ -38,6 +38,17 @@ public class Game1 : Game
             { "BuildingD", 0.7f },
             { "BuildingE", 0.3f },
             { "BuildingF", 0.8f }
+        };
+    
+    private static Dictionary<string, float> _rentPrices =
+        new Dictionary<string, float>
+        {
+            { "BuildingA", 0.3f },
+            { "BuildingB", 0.2f },
+            { "BuildingC", 0.5f },
+            { "BuildingD", 0.1f },
+            { "BuildingE", 0.3f },
+            { "BuildingF", 0.5f }
         };
 
     public Game1()
@@ -91,8 +102,8 @@ public class Game1 : Game
             mapPosition
         );
         
-        
-        _heatMap.PullData(_dataPoints);
+        _heatMap.ResetMap();
+        _heatMap.PullData(_amenities);
         _heatMap.AnimateHeatMap(true,_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight );
     }
 
