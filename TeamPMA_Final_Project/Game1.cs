@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,12 +12,17 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private ToggleButton rentHeatmapToggle;
+    private ToggleButton amenitiesHeatmapToggle;
     private Texture2D _bubbleTexture;
     private Texture2D _mapTexture;
     private Texture2D _shortBuilding;
     private Texture2D _tallBuilding;
     private Vector2 mapPosition;
     private HeatMap _heatMap;
+    private SpriteFont _uiFont;
+    private bool _previousRentState = false;
+    private bool _previousAmenitiesState = false;
+    private SoundEffect _buttonClickSound;
 
     private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
         new List<(Vector2 position, string buildingName, bool isTallBuilding)>
@@ -69,13 +75,18 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button");
-        Texture2D toggleOffTex = Content.Load<Texture2D>("imgs/off_button2");
+        Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button7");
+        Texture2D toggleOffTex = Content.Load<Texture2D>("imgs/off_button7");
+        _uiFont = Content.Load<SpriteFont>("imgs/fontt");
 
-        // Initialize the button at X: 50, Y: 50, Width: 100, Height: 50
-        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75));
-        // Make this specific button 50% transparent!
+        _buttonClickSound = Content.Load<SoundEffect>("imgs/506054__mellau__button-click-1");
+
+        // UPDATED: Pass the sound effect into the buttons when you create them
+        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75), _buttonClickSound);
         rentHeatmapToggle.Opacity = 1f;
+    
+        amenitiesHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 150, 75, 75), _buttonClickSound);
+        amenitiesHeatmapToggle.Opacity = 1f;
     
 
         _mapTexture = Content.Load<Texture2D>("imgs/map");
@@ -103,8 +114,8 @@ public class Game1 : Game
         );
         
         _heatMap.ResetMap();
-        _heatMap.PullData(_amenities);
-        _heatMap.AnimateHeatMap(true,_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight );
+        //_heatMap.PullData(_amenities);
+        //_heatMap.AnimateHeatMap(true,_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight );
     }
 
     protected override void Update(GameTime gameTime)
@@ -117,6 +128,45 @@ public class Game1 : Game
 
         // Update the button logic
         rentHeatmapToggle.Update(currentMouse);
+        amenitiesHeatmapToggle.Update(currentMouse);
+        
+        // --- RENT HEATMAP LOGIC ---
+        // Check if the rent button's state just changed
+        if (rentHeatmapToggle.IsOn != _previousRentState)
+        {
+            if (rentHeatmapToggle.IsOn) // Button was turned ON
+            {
+                _heatMap.ResetMap();
+                _heatMap.PullData(_rentPrices); // Pull the rent data
+                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            }
+            else // Button was turned OFF
+            {
+                _heatMap.ResetMap(); // Clears the screen
+            }
+            
+            // Save the new state
+            _previousRentState = rentHeatmapToggle.IsOn;
+        }
+
+        // --- AMENITIES HEATMAP LOGIC ---
+        // Check if the amenities button's state just changed
+        if (amenitiesHeatmapToggle.IsOn != _previousAmenitiesState)
+        {
+            if (amenitiesHeatmapToggle.IsOn) // Button was turned ON
+            {
+                _heatMap.ResetMap();
+                _heatMap.PullData(_amenities); // Pull your amenities dictionary data
+                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            }
+            else // Button was turned OFF
+            {
+                _heatMap.ResetMap(); // Clears the screen
+            }
+            
+            // Save the new state
+            _previousAmenitiesState = amenitiesHeatmapToggle.IsOn;
+        }
 
         _heatMap.Update(gameTime);
 
@@ -138,6 +188,12 @@ public class Game1 : Game
     
         // Draw the button
         rentHeatmapToggle.Draw(_spriteBatch);
+        amenitiesHeatmapToggle.Draw(_spriteBatch);
+        _spriteBatch.DrawString(_uiFont, "Rent Heat Map", new Vector2(1000, 20), Color.Black);
+        
+        // Amenities label placed at Y: 125 (above the Y: 150 button)
+        _spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1043, 220), Color.Black);
+        _spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
     
         _spriteBatch.End();
 

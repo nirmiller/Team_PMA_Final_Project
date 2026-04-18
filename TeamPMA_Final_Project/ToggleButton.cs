@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio; // NEW: You need this using statement for Audio!
 namespace TeamPMA_Final_Project;
 
 public class ToggleButton
@@ -9,13 +10,15 @@ public class ToggleButton
         private Texture2D textureOn;
         private Texture2D textureOff;
         private Rectangle bounds;
+        
 
         public float Opacity { get; set; } = 0.8f; // Setting it to 0.8f makes it 80% opaque by default
 
         // State tracking
         private MouseState previousMouse;
+        private SoundEffect clickSound;
         
-        public bool IsOn { get; private set; }
+        public bool IsOn { get; set; }
         public bool IsHovered { get; private set; }
 
         /// <summary>
@@ -25,11 +28,13 @@ public class ToggleButton
         /// <param name="texOff">Texture when the toggle is inactive.</param>
         /// <param name="position">The X, Y, Width, and Height of the button.</param>
         /// <param name="defaultState">Starting state of the toggle.</param>
-        public ToggleButton(Texture2D texOn, Texture2D texOff, Rectangle position, bool defaultState = false)
+
+        public ToggleButton(Texture2D texOn, Texture2D texOff, Rectangle position, SoundEffect sound, bool defaultState = false)
         {
             textureOn = texOn;
             textureOff = texOff;
             bounds = position;
+            clickSound = sound; // Store the sound
             IsOn = defaultState;
         }
 
@@ -46,7 +51,7 @@ public class ToggleButton
                 // Toggle the state
                 IsOn = !IsOn; 
                 
-                // Cosmo, here is where you could eventually trigger your clicking sound effect!
+                clickSound?.Play(volume: 0.5f, pitch: 0.0f, pan: 0.0f);
             }
 
             // 3. Save the current state for the next frame's comparison
