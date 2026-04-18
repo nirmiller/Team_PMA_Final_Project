@@ -31,10 +31,12 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button");
-        Texture2D toggleOffTex = Content.Load<Texture2D>("toggle_off");
+        Texture2D toggleOffTex = Content.Load<Texture2D>("imgs/off_button2");
 
         // Initialize the button at X: 50, Y: 50, Width: 100, Height: 50
-        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(50, 50, 100, 50));
+        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75));
+        // Make this specific button 50% transparent!
+        rentHeatmapToggle.Opacity = 1f;
     
 
         // TODO: use this.Content to load your game content here

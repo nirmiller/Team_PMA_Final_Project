@@ -10,6 +10,8 @@ public class ToggleButton
         private Texture2D textureOff;
         private Rectangle bounds;
 
+        public float Opacity { get; set; } = 0.8f; // Setting it to 0.8f makes it 80% opaque by default
+
         // State tracking
         private MouseState previousMouse;
         
@@ -55,10 +57,14 @@ public class ToggleButton
         {
             // Pick the right texture based on the boolean state
             Texture2D currentTexture = IsOn ? textureOn : textureOff;
-            
-            // Optional Polish: Tint the button slightly if hovered to give the user visual feedback
-            Color tintColor = IsHovered ? Color.LightGray : Color.White;
+    
+            // Determine the base color (with hover effect)
+            Color baseColor = IsHovered ? Color.LightGray : Color.White;
 
-            spriteBatch.Draw(currentTexture, bounds, tintColor);
+            // Multiply the base color by the opacity to make it transparent
+            Color finalColor = baseColor * Opacity;
+
+            // Draw the button with the transparent color
+            spriteBatch.Draw(currentTexture, bounds, finalColor);
         }
 }
