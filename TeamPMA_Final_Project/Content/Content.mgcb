@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n.mp3
+
 #begin imgs/506054__mellau__button-click-1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

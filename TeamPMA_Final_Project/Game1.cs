@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using Microsoft.Xna.Framework.Media; 
 namespace TeamPMA_Final_Project;
 //jhkhk
 
@@ -23,6 +23,9 @@ public class Game1 : Game
     private bool _previousRentState = false;
     private bool _previousAmenitiesState = false;
     private SoundEffect _buttonClickSound;
+    private ToggleButton musicToggle;
+    private Song backgroundMusic;
+    private bool _previousMusicState = false;
 
     private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
         new List<(Vector2 position, string buildingName, bool isTallBuilding)>
@@ -80,6 +83,13 @@ public class Game1 : Game
         _uiFont = Content.Load<SpriteFont>("imgs/fontt");
 
         _buttonClickSound = Content.Load<SoundEffect>("imgs/506054__mellau__button-click-1");
+        backgroundMusic = Content.Load<Song>("imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n");
+        
+        // Optional: If you want the song to loop infinitely when turned on
+        MediaPlayer.IsRepeating = true; 
+
+        
+        musicToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(20, 50, 75, 75), null);
 
         // UPDATED: Pass the sound effect into the buttons when you create them
         rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75), _buttonClickSound);
@@ -167,6 +177,27 @@ public class Game1 : Game
             // Save the new state
             _previousAmenitiesState = amenitiesHeatmapToggle.IsOn;
         }
+        // Update the new button
+        musicToggle.Update(currentMouse);
+
+        // --- MUSIC BUTTON LOGIC ---
+        // Check if the music button's state just changed this frame
+        if (musicToggle.IsOn != _previousMusicState)
+        {
+            if (musicToggle.IsOn) 
+            {
+                // Button was turned ON -> Play the song
+                MediaPlayer.Play(backgroundMusic);
+            }
+            else 
+            {
+                // Button was turned OFF -> Pause the song
+                MediaPlayer.Pause();
+            }
+            
+            // Save the new state so this only triggers once per click
+            _previousMusicState = musicToggle.IsOn;
+        }
 
         _heatMap.Update(gameTime);
 
@@ -189,11 +220,15 @@ public class Game1 : Game
         // Draw the button
         rentHeatmapToggle.Draw(_spriteBatch);
         amenitiesHeatmapToggle.Draw(_spriteBatch);
+        musicToggle.Draw(_spriteBatch);
         _spriteBatch.DrawString(_uiFont, "Rent Heat Map", new Vector2(1000, 20), Color.Black);
         
-        // Amenities label placed at Y: 125 (above the Y: 150 button)
+        
+        _spriteBatch.DrawString(_uiFont, "Music", new Vector2(20, 25), Color.Black);
+
         _spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1043, 220), Color.Black);
         _spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
+        
     
         _spriteBatch.End();
 
