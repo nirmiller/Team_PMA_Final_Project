@@ -12,6 +12,7 @@ public class Bubble
     public float Radius;
     public float TargetRadius;
     public float GrowthSpeed;
+    public float bubbleColor; 
     
     private float _t; // goes from 0 → 1
     private float _growthTime;
