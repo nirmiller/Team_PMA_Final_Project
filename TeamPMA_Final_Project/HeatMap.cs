@@ -176,4 +176,31 @@ public class HeatMap
             }
         }
     }
+    public string GetClickedBuilding(Point mousePosition)
+    {
+        foreach (KeyValuePair<string, (Vector2 position, bool isTallBuilding)> building in _buildingInformation)
+        {
+            Texture2D currentBuilding = building.Value.isTallBuilding ? _buildingTall : _buildingShort;
+
+            Vector2 scaledBuildingPosition = building.Value.position * _mapScale;
+            Vector2 drawPosition = _centeredMapPosition + scaledBuildingPosition;
+
+            int width = (int)(currentBuilding.Width * _buildingScale);
+            int height = (int)(currentBuilding.Height * _buildingScale);
+
+            Rectangle buildingBounds = new Rectangle(
+                (int)(drawPosition.X - width / 2f),
+                (int)(drawPosition.Y - height / 2f),
+                width,
+                height
+            );
+
+            if (buildingBounds.Contains(mousePosition))
+            {
+                return building.Key;
+            }
+        }
+
+        return null;
+    }
 }

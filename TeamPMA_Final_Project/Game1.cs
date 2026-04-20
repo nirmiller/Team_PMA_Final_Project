@@ -26,6 +26,9 @@ public class Game1 : Game
     private ToggleButton musicToggle;
     private Song backgroundMusic;
     private bool _previousMusicState = false;
+    private MouseState _previousMouseState;
+    private string _selectedBuilding = null;
+    private Texture2D _popupPixel;
 
     private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
         new List<(Vector2 position, string buildingName, bool isTallBuilding)>
@@ -59,6 +62,29 @@ public class Game1 : Game
             { "BuildingE", 0.3f },
             { "BuildingF", 0.5f }
         };
+
+    private static Dictionary<string, string> _displayNames =
+        new Dictionary<string, string>
+        {
+            { "BuildingA", "### Apartment A ###" },
+            { "BuildingB", "### Apartment B ###" },
+            { "BuildingC", "### Apartment C ###" },
+            { "BuildingD", "### Apartment D ###" },
+            { "BuildingE", "### Apartment E ###" },
+            { "BuildingF", "### Apartment F ###" }
+        };
+    
+    private static Dictionary<string, string> _popupDescriptions =
+        new Dictionary<string, string>
+        {
+            { "BuildingA", "Rent: $$   Amenities: Low" },
+            { "BuildingB", "Rent: $$   Amenities: High" },
+            { "BuildingC", "Rent: $$$  Amenities: Medium" },
+            { "BuildingD", "Rent: $    Amenities: High" },
+            { "BuildingE", "Rent: $$   Amenities: Low" },
+            { "BuildingF", "Rent: $$$  Amenities: High" }
+        };
+    
 
     public Game1()
     {
@@ -198,8 +224,29 @@ public class Game1 : Game
             // Save the new state so this only triggers once per click
             _previousMusicState = musicToggle.IsOn;
         }
+        
+        if (currentMouse.LeftButton == ButtonState.Pressed &&
+            _previousMouseState.LeftButton == ButtonState.Released)
+        {
+            string clickedBuilding = _heatMap.GetClickedBuilding(currentMouse.Position);
+
+            if (clickedBuilding != null)
+            {
+                _selectedBuilding = clickedBuilding;
+            }
+            else
+            {
+                _selectedBuilding = null;
+            }
+        }
+        
+        _popupPixel = new Texture2D(GraphicsDevice, 1, 1);
+        _popupPixel.SetData(new[] { Color.White });
+        
 
         _heatMap.Update(gameTime);
+       
+        _previousMouseState = currentMouse;
 
         base.Update(gameTime);
     }
@@ -230,6 +277,31 @@ public class Game1 : Game
         _spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
         
     
+        if (_selectedBuilding != null)
+        {
+            Rectangle popupRect = new Rectangle(30, 650, 320, 110);
+
+           
+
+            _spriteBatch.Draw(_popupPixel, popupRect, Color.White * 0.9f);
+
+            _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, popupRect.Width, 2), Color.Black);
+            _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Bottom - 2, popupRect.Width, 2), Color.Black);
+            _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, 2, popupRect.Height), Color.Black);
+            _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.Right - 2, popupRect.Y, 2, popupRect.Height), Color.Black);
+
+            string title = _displayNames.ContainsKey(_selectedBuilding)
+                ? _displayNames[_selectedBuilding]
+                : _selectedBuilding;
+
+            string info = _popupDescriptions.ContainsKey(_selectedBuilding)
+                ? _popupDescriptions[_selectedBuilding]
+                : "No data available";
+
+            _spriteBatch.DrawString(_uiFont, title, new Vector2(popupRect.X + 15, popupRect.Y + 12), Color.Black);
+            _spriteBatch.DrawString(_uiFont, info, new Vector2(popupRect.X + 15, popupRect.Y + 50), Color.Black);
+        }
+        
         _spriteBatch.End();
 
         base.Draw(gameTime);
