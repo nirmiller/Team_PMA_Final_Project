@@ -1,1 +1,34 @@
+Project Summary:
+
+An augmented map that includes a visualization of building rent prices and amenities offered. 
+The visualization is meant to aid incoming students with choosing the right apartment that fits their budget and experience that they are looking for.
+ We have several functionalities for the project, including: a music radio, a visual heat map that can be toggled with the side buttons, 
+ a popup GUI that displays specific information about an apartment when pressed, a favorite/ save button that allows a user to save their favorite apartments, 
+ a favorites screen, which displays a list of all favorite apartments. 
+
+
+Nir: 
+
+-HeatMap class
+-Bubbles class
+-SaveManager class
+
+Cosmo:
+
+-ToggleButton classes
+-Different scene and scene toggling 
+-Main GUI
+
+Zavian:
+
+-Data input/ output and handling
+-Pop up GUI
+-Apartment data / information
+
+
+Issues and challenges :
+
+Making the display look visually appealing.
+Getting accurate rent and amenities data. 
+The saving functionality.
 

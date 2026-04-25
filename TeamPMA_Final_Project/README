@@ -1,1 +1,14 @@
+Load up the game per usual with the run botton.
+
+Press on the toggle buttons to toggle on or off different features of the map, including:
+
+- Music
+- Display of heat map
+- Switching to favorites tab
+- Pressing on building to get accurate data
+
+To save a building to your favorites, click on a building, then press the star button in the popup GUI. 
+
+To save the information for future use press the 'save' button. This will automatically save your favorite buildings
+across game instances to a JSON file, which will load up upon restarting the game. 
 
