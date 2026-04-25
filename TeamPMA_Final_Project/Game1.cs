@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media; 
+
 namespace TeamPMA_Final_Project;
-//jhkhk
 
 public class Game1 : Game
 {
@@ -25,14 +25,22 @@ public class Game1 : Game
     private SpriteFont _uiFont;
     private bool _previousRentState = false;
     private bool _previousAmenitiesState = false;
+    private bool _previousSaveFavoriteState = false;
     private SoundEffect _buttonClickSound;
-    private ToggleButton musicToggle;
     private ToggleButton saveFavorite;
-    private Song backgroundMusic;
-    private bool _previousMusicState = false;
+    private ToggleButton starButton;
     private MouseState _previousMouseState;
     private string _selectedBuilding = null;
     private Texture2D _popupPixel;
+    
+    // RADIO VARIABLES
+    private RadioPlayer _radio;
+    private ToggleButton _btnPrev;
+    private ToggleButton _btnPlayStop;
+    private ToggleButton _btnNext;
+    private bool _prevPrevState = false;
+    private bool _prevPlayStopState = false;
+    private bool _prevNextState = false;
 
     private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
         new List<(Vector2 position, string buildingName, bool isTallBuilding)>
@@ -94,8 +102,6 @@ public class Game1 : Game
     {
         _graphics = new GraphicsDeviceManager(this);
         saveManager = new SaveManager();
-
-       
         
         _graphics.PreferredBackBufferHeight = 800;
         _graphics.PreferredBackBufferWidth = 1200;
@@ -110,42 +116,55 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-        
         savePath = "Content/favorites.json";
         saveManager.LoadFavorites(savePath);
        
-        
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button7");
         Texture2D toggleOffTex = Content.Load<Texture2D>("imgs/off_button7");
         _uiFont = Content.Load<SpriteFont>("imgs/fontt");
-
         _buttonClickSound = Content.Load<SoundEffect>("imgs/506054__mellau__button-click-1");
-        backgroundMusic = Content.Load<Song>("imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n");
         
-        MediaPlayer.IsRepeating = true; 
-
+        // 1. LOAD SONGS
+        Song track1 = Content.Load<Song>("imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n");
+        Song track2 = Content.Load<Song>("imgs/song2"); 
+        Song track3 = Content.Load<Song>("imgs/song3");
+        List<Song> myPlaylist = new List<Song> { track1, track2, track3 };
+        _radio = new RadioPlayer(myPlaylist);
         
-        musicToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(20, 50, 75, 75), null);
+        // 2. LOAD RADIO TEXTURES (Make sure the prev/next paths match your files!)
+        Texture2D stopTex = Content.Load<Texture2D>("imgs/stop_button-transp");
+        Texture2D playTex = Content.Load<Texture2D>("imgs/play_button-transp");
+        Texture2D prevTex = Content.Load<Texture2D>("imgs/play_left-transp"); 
+        Texture2D nextTex = Content.Load<Texture2D>("imgs/play_right-transp"); 
+        
+        // 3. CREATE RADIO BUTTONS
+        _btnPrev = new ToggleButton(prevTex, prevTex, new Rectangle(20, 50, 40, 40), _buttonClickSound);
+        // PlayStop uses Stop as ON, and Play as OFF
+        _btnPlayStop = new ToggleButton(stopTex, playTex, new Rectangle(70, 50, 40, 40), _buttonClickSound);
+        _btnNext = new ToggleButton(nextTex, nextTex, new Rectangle(120, 50, 40, 40), _buttonClickSound);
+        
         saveFavorite = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(22, 440, 75, 75), _buttonClickSound);
         saveFavorite.Opacity = 1f;
         rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75), _buttonClickSound);
         rentHeatmapToggle.Opacity = 1f;
-    
         amenitiesHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 150, 75, 75), _buttonClickSound);
         amenitiesHeatmapToggle.Opacity = 1f;
-    
 
         _mapTexture = Content.Load<Texture2D>("imgs/map");
         _shortBuilding = Content.Load<Texture2D>("imgs/short_building");
         _tallBuilding = Content.Load<Texture2D>("imgs/tall_building");
+        Texture2D starOnTex = Content.Load<Texture2D>("imgs/star_on");
+        Texture2D starOffTex = Content.Load<Texture2D>("imgs/star_off");
 
         _bubbleTexture = Bubble.CreateCircleTexture(GraphicsDevice, 64);
 
         float mapScale = 0.8f;
-
         float mapDrawWidth = _mapTexture.Width * mapScale;
         float mapDrawHeight = _mapTexture.Height * mapScale;
+        
+        starButton = new ToggleButton(starOnTex, starOffTex, new Rectangle(300, 660, 40, 40), _buttonClickSound);
+        starButton.Opacity = 1f;
 
         mapPosition = new Vector2(
             (_graphics.PreferredBackBufferWidth - mapDrawWidth) / 2f,
@@ -161,8 +180,8 @@ public class Game1 : Game
         );
         
         _heatMap.ResetMap();
-        //_heatMap.PullData(_amenities);
-        //_heatMap.AnimateHeatMap(true,_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight );
+        _popupPixel = new Texture2D(GraphicsDevice, 1, 1);
+        _popupPixel.SetData(new[] { Color.White });
     }
 
     protected override void Update(GameTime gameTime)
@@ -170,66 +189,84 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+            
         MouseState currentMouse = Mouse.GetState();
 
         rentHeatmapToggle.Update(currentMouse);
         amenitiesHeatmapToggle.Update(currentMouse);
-
         saveFavorite.Update(currentMouse);
         
-        // --- RENT HEATMAP LOGIC ---
-        // Check if the rent button's state just changed
+        // UPDATE RADIO BUTTONS
+        _btnPrev.Update(currentMouse);
+        _btnPlayStop.Update(currentMouse);
+        _btnNext.Update(currentMouse);
+        _radio.Update();
+
+        // --- RADIO BUTTON LOGIC ---
+        // PREVIOUS BUTTON
+        if (_btnPrev.IsOn != _prevPrevState)
+        {
+            if (_btnPrev.IsOn) 
+            { 
+                _radio.PreviousSong(); 
+                _btnPlayStop.IsOn = true; // Visually change the middle button to "Stop"
+                _btnPrev.IsOn = false;    // Reset this button
+            }
+            _prevPrevState = _btnPrev.IsOn;
+        }
+
+        // PLAY/STOP BUTTON
+        if (_btnPlayStop.IsOn != _prevPlayStopState)
+        {
+            if (_btnPlayStop.IsOn) { _radio.Play(); }
+            else { _radio.Stop(); }
+            _prevPlayStopState = _btnPlayStop.IsOn;
+        }
+
+        // NEXT BUTTON
+        if (_btnNext.IsOn != _prevNextState)
+        {
+            if (_btnNext.IsOn) 
+            { 
+                _radio.NextSong(); 
+                _btnPlayStop.IsOn = true; // Visually change the middle button to "Stop"
+                _btnNext.IsOn = false;    // Reset this button
+            }
+            _prevNextState = _btnNext.IsOn;
+        }
+
+        // --- HEATMAP LOGIC ---
         if (rentHeatmapToggle.IsOn != _previousRentState)
         {
-            if (rentHeatmapToggle.IsOn) 
+            if (rentHeatmapToggle.IsOn)
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_rentPrices); 
+                _heatMap.PullData(_rentPrices);
                 _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, Color.Red);
             }
             else
             {
-                _heatMap.ResetMap(); 
+                _heatMap.ResetMap();
             }
-            
-            // Save the new state
             _previousRentState = rentHeatmapToggle.IsOn;
         }
 
-       
         if (amenitiesHeatmapToggle.IsOn != _previousAmenitiesState)
         {
-            if (amenitiesHeatmapToggle.IsOn) 
+            if (amenitiesHeatmapToggle.IsOn)
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_amenities); 
+                _heatMap.PullData(_amenities);
                 _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, Color.Green);
             }
-            else 
+            else
             {
-                _heatMap.ResetMap(); 
+                _heatMap.ResetMap();
             }
-            
-           
             _previousAmenitiesState = amenitiesHeatmapToggle.IsOn;
         }
-        musicToggle.Update(currentMouse);
 
-     
-        if (musicToggle.IsOn != _previousMusicState)
-        {
-            if (musicToggle.IsOn) 
-            {
-              MediaPlayer.Play(backgroundMusic);
-            }
-            else 
-            {
-                MediaPlayer.Pause();
-            }
-            
-            _previousMusicState = musicToggle.IsOn;
-        }
-        
+        // --- POPUP CLICK LOGIC ---
         if (currentMouse.LeftButton == ButtonState.Pressed &&
             _previousMouseState.LeftButton == ButtonState.Released)
         {
@@ -238,21 +275,43 @@ public class Game1 : Game
             if (clickedBuilding != null)
             {
                 _selectedBuilding = clickedBuilding;
+                starButton.IsOn = saveManager.GetFavorites().Contains(_selectedBuilding);
             }
             else
             {
-                _selectedBuilding = null;
+                if (!starButton.IsHovered || _selectedBuilding == null) 
+                {
+                    _selectedBuilding = null;
+                }
             }
         }
         
-        _popupPixel = new Texture2D(GraphicsDevice, 1, 1);
-        _popupPixel.SetData(new[] { Color.White });
-        
+        // --- STAR BUTTON LOGIC ---
+        if (_selectedBuilding != null)
+        {
+            bool previousStarState = starButton.IsOn;
+            starButton.Update(currentMouse);
+
+            if (starButton.IsOn != previousStarState)
+            {
+                if (starButton.IsOn) { saveManager.AddFavorite(_selectedBuilding); } 
+                else { saveManager.RemoveFavorite(_selectedBuilding); }
+            }
+        }
+
+        // --- SAVE LOGIC ---
+        if (saveFavorite.IsOn != _previousSaveFavoriteState)
+        {
+            if (saveFavorite.IsOn)
+            {
+                saveManager.Save(savePath);
+                saveFavorite.IsOn = false;
+            }
+            _previousSaveFavoriteState = saveFavorite.IsOn;
+        }
 
         _heatMap.Update(gameTime);
-       
         _previousMouseState = currentMouse;
-
         base.Update(gameTime);
     }
 
@@ -261,34 +320,35 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin();
-
         _heatMap.DrawMap(_spriteBatch, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);     
         _heatMap.Draw(_spriteBatch, _bubbleTexture);
-
         _spriteBatch.End();
-        // TODO: Add your drawing code here
+
         _spriteBatch.Begin();
+        
+        // Draw Radio Buttons
+        _btnPrev.Draw(_spriteBatch);
+        _btnPlayStop.Draw(_spriteBatch);
+        _btnNext.Draw(_spriteBatch);
     
-        // Draw the button
+        // Draw Other Buttons
         rentHeatmapToggle.Draw(_spriteBatch);
         amenitiesHeatmapToggle.Draw(_spriteBatch);
-        musicToggle.Draw(_spriteBatch);
         saveFavorite.Draw(_spriteBatch);
+        
+        // Draw Text
         _spriteBatch.DrawString(_uiFont, "Rent Heat Map", new Vector2(1000, 20), Color.Black);
-        _spriteBatch.DrawString(_uiFont, "Music", new Vector2(20, 25), Color.Black);
+        _spriteBatch.DrawString(_uiFont, "Radio Controls", new Vector2(20, 25), Color.Black);
         _spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1043, 220), Color.Black);
         _spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
-        _spriteBatch.DrawString(_uiFont,"Save Favs", new Vector2(12, 400), Color.Black);
+        _spriteBatch.DrawString(_uiFont, "Save Favs", new Vector2(12, 400), Color.Black);
         
-    
+        // Draw Popup
         if (_selectedBuilding != null)
         {
             Rectangle popupRect = new Rectangle(30, 650, 320, 110);
 
-           
-
             _spriteBatch.Draw(_popupPixel, popupRect, Color.White * 0.9f);
-
             _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, popupRect.Width, 2), Color.Black);
             _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Bottom - 2, popupRect.Width, 2), Color.Black);
             _spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, 2, popupRect.Height), Color.Black);
@@ -304,14 +364,11 @@ public class Game1 : Game
 
             _spriteBatch.DrawString(_uiFont, title, new Vector2(popupRect.X + 15, popupRect.Y + 12), Color.Black);
             _spriteBatch.DrawString(_uiFont, info, new Vector2(popupRect.X + 15, popupRect.Y + 50), Color.Black);
+            starButton.Draw(_spriteBatch);
         }
         
         _spriteBatch.End();
 
         base.Draw(gameTime);
     }
-    
-    
-    
-
 }
