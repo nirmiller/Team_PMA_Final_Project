@@ -10,20 +10,21 @@ public class Game : Microsoft.Xna.Framework.Game
     public static string SavePath;
 
     public SaveManager SaveManager { get; private set; }
+    public BuildingDataManager BuildingDataManager { get; private set; }
     public GraphicsDeviceManager Graphics { get; private set; }
 
+    public SceneMap MapScene { get; private set; }
+    public SceneFavorites FavoritesScene { get; private set; }
+
     private SpriteBatch _spriteBatch;
-
     private Scene _currentScene;
-    private SceneMap _sceneMap;
-    private SceneFavorites _sceneFavorites;
-
     private KeyboardState _previousKeyboardState;
 
     public Game()
     {
         Graphics = new GraphicsDeviceManager(this);
         SaveManager = new SaveManager();
+        BuildingDataManager = new BuildingDataManager();
 
         Graphics.PreferredBackBufferHeight = 800;
         Graphics.PreferredBackBufferWidth = 1200;
@@ -37,17 +38,19 @@ public class Game : Microsoft.Xna.Framework.Game
     protected override void LoadContent()
     {
         SavePath = "Content/favorites.json";
+
         SaveManager.LoadFavorites(SavePath);
+        BuildingDataManager.LoadBuildings("Content/buildings");
 
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _sceneMap = new SceneMap(this);
-        _sceneFavorites = new SceneFavorites(this);
+        MapScene = new SceneMap(this);
+        FavoritesScene = new SceneFavorites(this);
 
-        _sceneMap.LoadContent();
-        _sceneFavorites.LoadContent();
+        MapScene.LoadContent();
+        FavoritesScene.LoadContent();
 
-        _currentScene = _sceneMap;
+        _currentScene = MapScene;
     }
 
     protected override void Update(GameTime gameTime)
@@ -55,13 +58,19 @@ public class Game : Microsoft.Xna.Framework.Game
         KeyboardState keyboardState = Keyboard.GetState();
 
         if (keyboardState.IsKeyDown(Keys.Escape))
+        {
             Exit();
+        }
 
         if (keyboardState.IsKeyDown(Keys.D1) && _previousKeyboardState.IsKeyUp(Keys.D1))
-            _currentScene = _sceneMap;
+        {
+            _currentScene = MapScene;
+        }
 
         if (keyboardState.IsKeyDown(Keys.D2) && _previousKeyboardState.IsKeyUp(Keys.D2))
-            _currentScene = _sceneFavorites;
+        {
+            _currentScene = FavoritesScene;
+        }
 
         _currentScene.Update(gameTime);
 
@@ -69,6 +78,7 @@ public class Game : Microsoft.Xna.Framework.Game
 
         base.Update(gameTime);
     }
+
     public void ChangeScene(Scene newScene)
     {
         _currentScene = newScene;

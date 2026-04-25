@@ -39,61 +39,6 @@ public class SceneMap : Scene
     private bool _prevPlayStopState = false;
     private bool _prevNextState = false;
 
-    private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
-        new List<(Vector2 position, string buildingName, bool isTallBuilding)>
-        {
-            (new Vector2(430, 120), "BuildingA", false),
-            (new Vector2(1275, 120), "BuildingB", false),
-            (new Vector2(700, 550), "BuildingC", true),
-            (new Vector2(650, 700), "BuildingD", true),
-            (new Vector2(775, 700), "BuildingE", true),
-            (new Vector2(1150, 900), "BuildingF", true)
-        };
-
-    private static Dictionary<string, float> _amenities =
-        new Dictionary<string, float>
-        {
-            { "BuildingA", 0.1f },
-            { "BuildingB", 0.2f },
-            { "BuildingC", 0.5f },
-            { "BuildingD", 0.7f },
-            { "BuildingE", 0.7f },
-            { "BuildingF", 0.7f }
-        };
-
-    private static Dictionary<string, float> _rentPrices =
-        new Dictionary<string, float>
-        {
-            { "BuildingA", 0.1f },
-            { "BuildingB", 0.2f },
-            { "BuildingC", 0.5f },
-            { "BuildingD", 0.7f },
-            { "BuildingE", 0.7f },
-            { "BuildingF", 0.6f }
-        };
-
-    private static Dictionary<string, string> _displayNames =
-        new Dictionary<string, string>
-        {
-            { "BuildingA", "Galileo Condos" },
-            { "BuildingB", "Walter Webb Hall" },
-            { "BuildingC", "The Standard" },
-            { "BuildingD", "The Mark" },
-            { "BuildingE", "The Union" },
-            { "BuildingF", "Moon Tower" }
-        };
-
-    private static Dictionary<string, string> _popupDescriptions =
-        new Dictionary<string, string>
-        {
-            { "BuildingA", "Rent: $\nAmenities: Nothing" },
-            { "BuildingB", "Rent: $$\nAmenities: Gym" },
-            { "BuildingC", "Rent: $$\nAmenities: Pool,Gym" },
-            { "BuildingD", "Rent: $$$\nAmenities: Pool,Gym,Sauna" },
-            { "BuildingE", "Rent: $$$\nAmenities: Pool,Gym,Sauna" },
-            { "BuildingF", "Rent: $$$\nAmenities: Pool,Gym" }
-        };
-
     public SceneMap(Game game) : base(game)
     {
     }
@@ -152,11 +97,14 @@ public class SceneMap : Scene
         starButton = new ToggleButton(starOnTex, starOffTex, new Rectangle(300, 660, 40, 40), _buttonClickSound);
         starButton.Opacity = 1f;
 
+        List<(Vector2 position, string buildingName, bool isTallBuilding)> buildingInformation =
+            GetBuildingInformation();
+
         _heatMap = new HeatMap(
             _mapTexture,
             _shortBuilding,
             _tallBuilding,
-            _buildingInformation,
+            buildingInformation,
             mapPosition
         );
 
@@ -222,7 +170,7 @@ public class SceneMap : Scene
             if (rentHeatmapToggle.IsOn)
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_rentPrices);
+                _heatMap.PullData(GetRentDictionary());
                 _heatMap.AnimateHeatMap(
                     true,
                     Game.Graphics.PreferredBackBufferWidth,
@@ -243,7 +191,7 @@ public class SceneMap : Scene
             if (amenitiesHeatmapToggle.IsOn)
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_amenities);
+                _heatMap.PullData(GetAmenitiesDictionary());
                 _heatMap.AnimateHeatMap(
                     true,
                     Game.Graphics.PreferredBackBufferWidth,
@@ -337,26 +285,67 @@ public class SceneMap : Scene
 
         if (_selectedBuilding != null)
         {
-            Rectangle popupRect = new Rectangle(30, 650, 320, 110);
-
-            spriteBatch.Draw(_popupPixel, popupRect, Color.White * 0.9f);
-            spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, popupRect.Width, 2), Color.Black);
-            spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Bottom - 2, popupRect.Width, 2), Color.Black);
-            spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, 2, popupRect.Height), Color.Black);
-            spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.Right - 2, popupRect.Y, 2, popupRect.Height), Color.Black);
-
-            string title = _displayNames.ContainsKey(_selectedBuilding)
-                ? _displayNames[_selectedBuilding]
-                : _selectedBuilding;
-
-            string info = _popupDescriptions.ContainsKey(_selectedBuilding)
-                ? _popupDescriptions[_selectedBuilding]
-                : "No data available";
-
-            spriteBatch.DrawString(_uiFont, title, new Vector2(popupRect.X + 15, popupRect.Y + 12), Color.Black);
-            spriteBatch.DrawString(_uiFont, info, new Vector2(popupRect.X + 15, popupRect.Y + 50), Color.Black);
-
-            starButton.Draw(spriteBatch);
+            DrawPopup(spriteBatch);
         }
+    }
+
+    private List<(Vector2 position, string buildingName, bool isTallBuilding)> GetBuildingInformation()
+    {
+        List<(Vector2 position, string buildingName, bool isTallBuilding)> buildingInformation =
+            new List<(Vector2 position, string buildingName, bool isTallBuilding)>();
+
+        foreach (BuildingData building in Game.BuildingDataManager.GetBuildings().Values)
+        {
+            buildingInformation.Add(
+                (building.Position, building.Id, building.IsTallBuilding)
+            );
+        }
+
+        return buildingInformation;
+    }
+
+    private Dictionary<string, float> GetRentDictionary()
+    {
+        Dictionary<string, float> rentDictionary = new Dictionary<string, float>();
+
+        foreach (BuildingData building in Game.BuildingDataManager.GetBuildings().Values)
+        {
+            rentDictionary[building.Id] = building.RentValue;
+        }
+
+        return rentDictionary;
+    }
+
+    private Dictionary<string, float> GetAmenitiesDictionary()
+    {
+        Dictionary<string, float> amenitiesDictionary = new Dictionary<string, float>();
+
+        foreach (BuildingData building in Game.BuildingDataManager.GetBuildings().Values)
+        {
+            amenitiesDictionary[building.Id] = building.AmenitiesValue;
+        }
+
+        return amenitiesDictionary;
+    }
+
+    private void DrawPopup(SpriteBatch spriteBatch)
+    {
+        Rectangle popupRect = new Rectangle(30, 650, 320, 110);
+
+        spriteBatch.Draw(_popupPixel, popupRect, Color.White * 0.9f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, popupRect.Width, 2), Color.Black);
+        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Bottom - 2, popupRect.Width, 2), Color.Black);
+        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, 2, popupRect.Height), Color.Black);
+        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.Right - 2, popupRect.Y, 2, popupRect.Height), Color.Black);
+
+        BuildingData building = Game.BuildingDataManager.GetBuilding(_selectedBuilding);
+
+        string title = building != null ? building.DisplayName : _selectedBuilding;
+        string info = building != null ? building.PopupDescription : "No data available";
+
+        spriteBatch.DrawString(_uiFont, title, new Vector2(popupRect.X + 15, popupRect.Y + 12), Color.Black);
+        spriteBatch.DrawString(_uiFont, info, new Vector2(popupRect.X + 15, popupRect.Y + 50), Color.Black);
+
+        starButton.Draw(spriteBatch);
     }
 }

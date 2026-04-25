@@ -1,0 +1,62 @@
+{
+  "BuildingA": {
+    "Id": "BuildingA",
+    "DisplayName": "Galileo Condos",
+    "X": 430,
+    "Y": 120,
+    "IsTallBuilding": false,
+    "RentValue": 0.1,
+    "AmenitiesValue": 0.1,
+    "PopupDescription": "Rent: $\nAmenities: Nothing"
+  },
+  "BuildingB": {
+    "Id": "BuildingB",
+    "DisplayName": "Walter Webb Hall",
+    "X": 1275,
+    "Y": 120,
+    "IsTallBuilding": false,
+    "RentValue": 0.2,
+    "AmenitiesValue": 0.2,
+    "PopupDescription": "Rent: $$\nAmenities: Gym"
+  },
+  "BuildingC": {
+    "Id": "BuildingC",
+    "DisplayName": "The Standard",
+    "X": 700,
+    "Y": 550,
+    "IsTallBuilding": true,
+    "RentValue": 0.5,
+    "AmenitiesValue": 0.5,
+    "PopupDescription": "Rent: $$\nAmenities: Pool, Gym"
+  },
+  "BuildingD": {
+    "Id": "BuildingD",
+    "DisplayName": "The Mark",
+    "X": 650,
+    "Y": 700,
+    "IsTallBuilding": true,
+    "RentValue": 0.7,
+    "AmenitiesValue": 0.7,
+    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym, Sauna"
+  },
+  "BuildingE": {
+    "Id": "BuildingE",
+    "DisplayName": "The Union",
+    "X": 775,
+    "Y": 700,
+    "IsTallBuilding": true,
+    "RentValue": 0.7,
+    "AmenitiesValue": 0.7,
+    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym, Sauna"
+  },
+  "BuildingF": {
+    "Id": "BuildingF",
+    "DisplayName": "Moon Tower",
+    "X": 1150,
+    "Y": 900,
+    "IsTallBuilding": true,
+    "RentValue": 0.6,
+    "AmenitiesValue": 0.7,
+    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym"
+  }
+}

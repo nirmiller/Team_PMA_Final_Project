@@ -8,8 +8,6 @@ namespace TeamPMA_Final_Project;
 public class SceneFavorites : Scene
 {
     private SpriteFont _font;
-    private List<string> _favorites;
-
     private KeyboardState _previousKeyboard;
 
     public SceneFavorites(Game game) : base(game)
@@ -19,9 +17,6 @@ public class SceneFavorites : Scene
     public override void LoadContent()
     {
         _font = Game.Content.Load<SpriteFont>("imgs/fontt");
-
-        // get favorites from your SaveManager
-        _favorites = Game.SaveManager.GetFavorites();
     }
 
     public override void Update(GameTime gameTime)
@@ -30,7 +25,7 @@ public class SceneFavorites : Scene
 
         if (keyboard.IsKeyDown(Keys.B) && _previousKeyboard.IsKeyUp(Keys.B))
         {
-            Game.ChangeScene(new SceneMap(Game));
+            Game.ChangeScene(Game.MapScene);
         }
 
         _previousKeyboard = keyboard;
@@ -39,20 +34,30 @@ public class SceneFavorites : Scene
     public override void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.DrawString(_font, "Favorites", new Vector2(50, 50), Color.Black);
+        spriteBatch.DrawString(_font, "Press B to go back", new Vector2(50, 80), Color.DarkGray);
 
-        if (_favorites.Count == 0)
+        List<string> favorites = Game.SaveManager.GetFavorites();
+
+        if (favorites.Count == 0)
         {
-            spriteBatch.DrawString(_font, "No favorites saved.", new Vector2(50, 100), Color.Gray);
+            spriteBatch.DrawString(_font, "No favorites saved.", new Vector2(50, 130), Color.Gray);
             return;
         }
 
-        // draw list
-        for (int i = 0; i < _favorites.Count; i++)
+        for (int i = 0; i < favorites.Count; i++)
         {
+            string buildingId = favorites[i];
+
+            BuildingData building = Game.BuildingDataManager.GetBuilding(buildingId);
+
+            string nameToDraw = building != null
+                ? building.DisplayName
+                : buildingId;
+
             spriteBatch.DrawString(
                 _font,
-                _favorites[i],
-                new Vector2(50, 100 + i * 30),
+                nameToDraw,
+                new Vector2(50, 130 + i * 30),
                 Color.Black
             );
         }
