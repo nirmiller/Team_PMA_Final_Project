@@ -40,8 +40,9 @@ public class Game : Microsoft.Xna.Framework.Game
         SavePath = "Content/favorites.json";
 
         SaveManager.LoadFavorites(SavePath);
-        BuildingDataManager.LoadBuildings("Content/buildings");
-
+        BuildingDataManager.LoadBuildings("Content/buildings.json");
+        
+        Console.WriteLine(BuildingDataManager.GetBuildings().Count);
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         MapScene = new SceneMap(this);
