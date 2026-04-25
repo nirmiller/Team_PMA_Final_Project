@@ -33,7 +33,6 @@ public class Game1 : Game
     private string _selectedBuilding = null;
     private Texture2D _popupPixel;
     
-    // RADIO VARIABLES
     private RadioPlayer _radio;
     private ToggleButton _btnPrev;
     private ToggleButton _btnPlayStop;
