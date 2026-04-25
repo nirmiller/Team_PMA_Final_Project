@@ -17,12 +17,15 @@ public class Bubble
     private float _maxPossibleRadius;
     private float _targetColorProgress;
 
+    private Color _targetColor;
+
     public Bubble(
         Vector2 position,
         float startRadius,
         float targetRadius,
         float growthTime,
-        float maxPossibleRadius)
+        float maxPossibleRadius,
+        Color targetColor) 
     {
         Position = position;
         Radius = startRadius;
@@ -30,6 +33,8 @@ public class Bubble
         TargetRadius = targetRadius;
         _growthTime = growthTime;
         _maxPossibleRadius = maxPossibleRadius;
+
+        _targetColor = targetColor;
 
         _t = 0f;
 
@@ -57,7 +62,7 @@ public class Bubble
         float scale = Radius / (texture.Width / 2f);
 
         float currentColorProgress = _t * _targetColorProgress;
-        Color bubbleColor = GetHeatColor(currentColorProgress);
+        Color bubbleColor = GetBubbleColor(currentColorProgress);
 
         spriteBatch.Draw(
             texture,
@@ -72,30 +77,13 @@ public class Bubble
         );
     }
 
-    private Color GetHeatColor(float t)
+    private Color GetBubbleColor(float t)
     {
         t = MathHelper.Clamp(t, 0f, 1f);
 
-        Color yellow = Color.Yellow;
-        Color orange = Color.Orange;
-        Color red = Color.Red;
-        Color darkRed = new Color(180, 0, 0);
+        Color startColor = Color.Yellow;
 
-        if (t < 0.33f)
-        {
-            float localT = t / 0.33f;
-            return Color.Lerp(yellow, orange, localT);
-        }
-        else if (t < 0.66f)
-        {
-            float localT = (t - 0.33f) / 0.33f;
-            return Color.Lerp(orange, red, localT);
-        }
-        else
-        {
-            float localT = (t - 0.66f) / 0.34f;
-            return Color.Lerp(red, darkRed, localT);
-        }
+        return Color.Lerp(startColor, _targetColor, t);
     }
 
     public static Texture2D CreateCircleTexture(GraphicsDevice graphicsDevice, int radius)

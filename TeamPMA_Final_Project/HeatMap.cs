@@ -148,7 +148,7 @@ public class HeatMap
         return _centeredMapPosition + mapPosition * _mapScale;
     }
 
-    public void AnimateHeatMap(bool showMap, int screenWidth, int screenHeight)
+    public void AnimateHeatMap(bool showMap, int screenWidth, int screenHeight, Color targetColor)
     {
         _bubbles.Clear();
 
@@ -171,7 +171,7 @@ public class HeatMap
                     float startRadius = 0f;
                     float targetRadius = value * maxRadius * _mapScale;
 
-                    _bubbles.Add(new Bubble(bubblePosition, startRadius, targetRadius, growthTime, maxRadius * _mapScale));
+                    _bubbles.Add(new Bubble(bubblePosition, startRadius, targetRadius, growthTime, maxRadius * _mapScale, targetColor));
                 }
             }
         }

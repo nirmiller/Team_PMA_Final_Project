@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media; 
 namespace TeamPMA_Final_Project;
-//jhkhk
+
 
 public class Game1 : Game
 {
+    private static string savePath;
+    private SaveManager saveManager;
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private ToggleButton rentHeatmapToggle;
@@ -33,12 +36,12 @@ public class Game1 : Game
     private static List<(Vector2 position, string buildingName, bool isTallBuilding)> _buildingInformation =
         new List<(Vector2 position, string buildingName, bool isTallBuilding)>
         {
-            (new Vector2(180, 140), "BuildingA", false),
-            (new Vector2(1200, 220), "BuildingB", true),
-            (new Vector2(600, 600), "BuildingC", false),
-            (new Vector2(650, 300), "BuildingD", true),
-            (new Vector2(1000, 800), "BuildingE", false),
-            (new Vector2(760, 210), "BuildingF", true)
+            (new Vector2(430, 120), "BuildingA", false),
+            (new Vector2(1275, 120), "BuildingB", false),
+            (new Vector2(700, 550), "BuildingC", true),
+            (new Vector2(650, 700), "BuildingD", true),
+            (new Vector2(775, 700), "BuildingE", true),
+            (new Vector2(1150, 900), "BuildingF", true)
         };
     
     private static Dictionary<string, float> _amenities =
@@ -66,19 +69,19 @@ public class Game1 : Game
     private static Dictionary<string, string> _displayNames =
         new Dictionary<string, string>
         {
-            { "BuildingA", "### Apartment A ###" },
-            { "BuildingB", "### Apartment B ###" },
-            { "BuildingC", "### Apartment C ###" },
-            { "BuildingD", "### Apartment D ###" },
-            { "BuildingE", "### Apartment E ###" },
-            { "BuildingF", "### Apartment F ###" }
+            { "BuildingA", "Galileo Condos" },
+            { "BuildingB", "Walter Webb Hall" },
+            { "BuildingC", "The Standard" },
+            { "BuildingD", "The Mark" },
+            { "BuildingE", "The Union" },
+            { "BuildingF", "Moon Tower" }
         };
     
     private static Dictionary<string, string> _popupDescriptions =
         new Dictionary<string, string>
         {
             { "BuildingA", "Rent: $$   Amenities: Low" },
-            { "BuildingB", "Rent: $$   Amenities: High" },
+            { "BuildingB", "Rent: $$   Amenities: Low" },
             { "BuildingC", "Rent: $$$  Amenities: Medium" },
             { "BuildingD", "Rent: $    Amenities: High" },
             { "BuildingE", "Rent: $$   Amenities: Low" },
@@ -89,7 +92,10 @@ public class Game1 : Game
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
+        saveManager = new SaveManager();
 
+       
+        
         _graphics.PreferredBackBufferHeight = 800;
         _graphics.PreferredBackBufferWidth = 1200;
         Content.RootDirectory = "Content";
@@ -103,6 +109,11 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
+        
+        savePath = "Content/favorites.json";
+        saveManager.LoadFavorites(savePath);
+       
+        
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         Texture2D toggleOnTex = Content.Load<Texture2D>("imgs/on_button7");
         Texture2D toggleOffTex = Content.Load<Texture2D>("imgs/off_button7");
@@ -159,69 +170,59 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-        // Grab the current mouse state
         MouseState currentMouse = Mouse.GetState();
 
-        // Update the button logic
         rentHeatmapToggle.Update(currentMouse);
         amenitiesHeatmapToggle.Update(currentMouse);
-        
-        // --- RENT HEATMAP LOGIC ---
-        // Check if the rent button's state just changed
+
         if (rentHeatmapToggle.IsOn != _previousRentState)
         {
-            if (rentHeatmapToggle.IsOn) // Button was turned ON
+            if (rentHeatmapToggle.IsOn) 
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_rentPrices); // Pull the rent data
-                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                _heatMap.PullData(_rentPrices); 
+                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, Color.Red);
             }
-            else // Button was turned OFF
+            else
             {
-                _heatMap.ResetMap(); // Clears the screen
+                _heatMap.ResetMap(); 
             }
             
             // Save the new state
             _previousRentState = rentHeatmapToggle.IsOn;
         }
 
-        // --- AMENITIES HEATMAP LOGIC ---
-        // Check if the amenities button's state just changed
+       
         if (amenitiesHeatmapToggle.IsOn != _previousAmenitiesState)
         {
-            if (amenitiesHeatmapToggle.IsOn) // Button was turned ON
+            if (amenitiesHeatmapToggle.IsOn) 
             {
                 _heatMap.ResetMap();
-                _heatMap.PullData(_amenities); // Pull your amenities dictionary data
-                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                _heatMap.PullData(_amenities); 
+                _heatMap.AnimateHeatMap(true, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, Color.Green);
             }
-            else // Button was turned OFF
+            else 
             {
-                _heatMap.ResetMap(); // Clears the screen
+                _heatMap.ResetMap(); 
             }
             
-            // Save the new state
+           
             _previousAmenitiesState = amenitiesHeatmapToggle.IsOn;
         }
-        // Update the new button
         musicToggle.Update(currentMouse);
 
-        // --- MUSIC BUTTON LOGIC ---
-        // Check if the music button's state just changed this frame
+     
         if (musicToggle.IsOn != _previousMusicState)
         {
             if (musicToggle.IsOn) 
             {
-                // Button was turned ON -> Play the song
-                MediaPlayer.Play(backgroundMusic);
+              MediaPlayer.Play(backgroundMusic);
             }
             else 
             {
-                // Button was turned OFF -> Pause the song
                 MediaPlayer.Pause();
             }
             
-            // Save the new state so this only triggers once per click
             _previousMusicState = musicToggle.IsOn;
         }
         
@@ -306,4 +307,8 @@ public class Game1 : Game
 
         base.Draw(gameTime);
     }
+    
+    
+    
+
 }
