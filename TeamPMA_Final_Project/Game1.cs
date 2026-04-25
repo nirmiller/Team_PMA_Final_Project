@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media; 
 namespace TeamPMA_Final_Project;
-
+//jhkhk
 
 public class Game1 : Game
 {
@@ -27,6 +27,7 @@ public class Game1 : Game
     private bool _previousAmenitiesState = false;
     private SoundEffect _buttonClickSound;
     private ToggleButton musicToggle;
+    private ToggleButton saveFavorite;
     private Song backgroundMusic;
     private bool _previousMusicState = false;
     private MouseState _previousMouseState;
@@ -122,13 +123,12 @@ public class Game1 : Game
         _buttonClickSound = Content.Load<SoundEffect>("imgs/506054__mellau__button-click-1");
         backgroundMusic = Content.Load<Song>("imgs/447515__alittlebitdrunkguy__simple-lofi-hip-hop-track-n");
         
-        // Optional: If you want the song to loop infinitely when turned on
         MediaPlayer.IsRepeating = true; 
 
         
         musicToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(20, 50, 75, 75), null);
-
-        // UPDATED: Pass the sound effect into the buttons when you create them
+        saveFavorite = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(22, 440, 75, 75), _buttonClickSound);
+        saveFavorite.Opacity = 1f;
         rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75), _buttonClickSound);
         rentHeatmapToggle.Opacity = 1f;
     
@@ -175,6 +175,10 @@ public class Game1 : Game
         rentHeatmapToggle.Update(currentMouse);
         amenitiesHeatmapToggle.Update(currentMouse);
 
+        saveFavorite.Update(currentMouse);
+        
+        // --- RENT HEATMAP LOGIC ---
+        // Check if the rent button's state just changed
         if (rentHeatmapToggle.IsOn != _previousRentState)
         {
             if (rentHeatmapToggle.IsOn) 
@@ -269,13 +273,12 @@ public class Game1 : Game
         rentHeatmapToggle.Draw(_spriteBatch);
         amenitiesHeatmapToggle.Draw(_spriteBatch);
         musicToggle.Draw(_spriteBatch);
+        saveFavorite.Draw(_spriteBatch);
         _spriteBatch.DrawString(_uiFont, "Rent Heat Map", new Vector2(1000, 20), Color.Black);
-        
-        
         _spriteBatch.DrawString(_uiFont, "Music", new Vector2(20, 25), Color.Black);
-
         _spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1043, 220), Color.Black);
         _spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
+        _spriteBatch.DrawString(_uiFont,"Save Favs", new Vector2(12, 400), Color.Black);
         
     
         if (_selectedBuilding != null)
