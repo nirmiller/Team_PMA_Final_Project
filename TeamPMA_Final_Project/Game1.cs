@@ -47,23 +47,23 @@ public class Game1 : Game
     private static Dictionary<string, float> _amenities =
         new Dictionary<string, float>
         {
-            { "BuildingA", 0.2f },
-            { "BuildingB", 0.9f },
+            { "BuildingA", 0.1f },
+            { "BuildingB", 0.2f },
             { "BuildingC", 0.5f },
             { "BuildingD", 0.7f },
-            { "BuildingE", 0.3f },
-            { "BuildingF", 0.8f }
+            { "BuildingE", 0.7f },
+            { "BuildingF", 0.7f }
         };
     
     private static Dictionary<string, float> _rentPrices =
         new Dictionary<string, float>
         {
-            { "BuildingA", 0.3f },
+            { "BuildingA", 0.1f },
             { "BuildingB", 0.2f },
             { "BuildingC", 0.5f },
-            { "BuildingD", 0.1f },
-            { "BuildingE", 0.3f },
-            { "BuildingF", 0.5f }
+            { "BuildingD", 0.7f },
+            { "BuildingE", 0.7f },
+            { "BuildingF", 0.6f }
         };
 
     private static Dictionary<string, string> _displayNames =
@@ -80,12 +80,12 @@ public class Game1 : Game
     private static Dictionary<string, string> _popupDescriptions =
         new Dictionary<string, string>
         {
-            { "BuildingA", "Rent: $$   Amenities: Low" },
-            { "BuildingB", "Rent: $$   Amenities: Low" },
-            { "BuildingC", "Rent: $$$  Amenities: Medium" },
-            { "BuildingD", "Rent: $    Amenities: High" },
-            { "BuildingE", "Rent: $$   Amenities: Low" },
-            { "BuildingF", "Rent: $$$  Amenities: High" }
+            { "BuildingA", "Rent: $\nAmenities: Nothing" },
+            { "BuildingB", "Rent: $$\nAmenities: Gym" },
+            { "BuildingC", "Rent: $$\nAmenities: Pool,Gym" },
+            { "BuildingD", "Rent: $$$\nAmenities: Pool,Gym,Sauna" },
+            { "BuildingE", "Rent: $$$\nAmenities: Pool,Gym,Sauna" },
+            { "BuildingF", "Rent: $$$\nAmenities: Pool,Gym" }
         };
     
 
