@@ -13,12 +13,12 @@ public class SaveManager
         favorites = new List<string>();
     }
 
-    public void LoadFavorites(string loadFile)
+    public  List<string> LoadFavorites(string loadFile)
     {
         if (!File.Exists(loadFile))
         {
             favorites = new List<string>();
-            return;
+            return new List<string>();
         }
 
         string json = File.ReadAllText(loadFile);
@@ -26,7 +26,7 @@ public class SaveManager
         if (string.IsNullOrWhiteSpace(json))
         {
             favorites = new List<string>();
-            return;
+            return favorites;
         }
 
         favorites = JsonSerializer.Deserialize<List<string>>(json);
@@ -35,6 +35,8 @@ public class SaveManager
         {
             favorites = new List<string>();
         }
+
+        return favorites;
     }
 
     public void AddFavorite(string buildingName)
