@@ -63,18 +63,18 @@ public class SceneMap : Scene
         Texture2D prevTex = Game.Content.Load<Texture2D>("imgs/play_left-transp");
         Texture2D nextTex = Game.Content.Load<Texture2D>("imgs/play_right-transp");
 
-        _btnPrev = new ToggleButton(prevTex, prevTex, new Rectangle(20, 50, 40, 40), _buttonClickSound);
-        _btnPlayStop = new ToggleButton(stopTex, playTex, new Rectangle(70, 50, 40, 40), _buttonClickSound);
-        _btnNext = new ToggleButton(nextTex, nextTex, new Rectangle(120, 50, 40, 40), _buttonClickSound);
-
-        saveFavorite = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(22, 440, 75, 75), _buttonClickSound);
-        saveFavorite.Opacity = 1f;
-
-        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 50, 75, 75), _buttonClickSound);
+        _btnPrev = new ToggleButton(prevTex, prevTex, new Rectangle(35, 75, 34, 34), _buttonClickSound);
+        _btnPlayStop = new ToggleButton(stopTex, playTex, new Rectangle(82, 75, 34, 34), _buttonClickSound);
+        _btnNext = new ToggleButton(nextTex, nextTex, new Rectangle(129, 75, 34, 34), _buttonClickSound);
+        
+        rentHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1115, 120, 50, 50), _buttonClickSound);
         rentHeatmapToggle.Opacity = 1f;
 
-        amenitiesHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1100, 150, 75, 75), _buttonClickSound);
+        amenitiesHeatmapToggle = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1115, 180, 50, 50), _buttonClickSound);
         amenitiesHeatmapToggle.Opacity = 1f;
+
+        saveFavorite = new ToggleButton(toggleOnTex, toggleOffTex, new Rectangle(1115, 240, 50, 50), _buttonClickSound);
+        saveFavorite.Opacity = 1f;
 
         _mapTexture = Game.Content.Load<Texture2D>("imgs/map");
         _shortBuilding = Game.Content.Load<Texture2D>("imgs/short_building");
@@ -94,7 +94,7 @@ public class SceneMap : Scene
             (Game.Graphics.PreferredBackBufferHeight - mapDrawHeight) / 2f
         );
 
-        starButton = new ToggleButton(starOnTex, starOffTex, new Rectangle(300, 660, 40, 40), _buttonClickSound);
+        starButton = new ToggleButton(starOnTex, starOffTex, new Rectangle(55, 715, 45, 45), _buttonClickSound);
         starButton.Opacity = 1f;
 
         List<(Vector2 position, string buildingName, bool isTallBuilding)> buildingInformation =
@@ -269,20 +269,41 @@ public class SceneMap : Scene
 
         _heatMap.Draw(spriteBatch, _bubbleTexture);
 
-        _btnPrev.Draw(spriteBatch);
-        _btnPlayStop.Draw(spriteBatch);
-        _btnNext.Draw(spriteBatch);
+        // Right-side controls panel
+        Rectangle controlsPanel = new Rectangle(985, 70, 195, 235);
+        spriteBatch.Draw(_popupPixel, controlsPanel, Color.Black * 0.65f);
 
+// Panel border
+        spriteBatch.Draw(_popupPixel, new Rectangle(controlsPanel.X, controlsPanel.Y, controlsPanel.Width, 2), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(controlsPanel.X, controlsPanel.Bottom - 2, controlsPanel.Width, 2), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(controlsPanel.X, controlsPanel.Y, 2, controlsPanel.Height), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(controlsPanel.Right - 2, controlsPanel.Y, 2, controlsPanel.Height), Color.White * 0.25f);
+
+        spriteBatch.DrawString(_uiFont, "Controls", new Vector2(1005, 90), Color.White);
+        spriteBatch.DrawString(_uiFont, "Rent", new Vector2(1005, 132), Color.LightGray);
+        spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1005, 192), Color.LightGray);
+        spriteBatch.DrawString(_uiFont, "Save", new Vector2(1005, 252), Color.LightGray);
         rentHeatmapToggle.Draw(spriteBatch);
         amenitiesHeatmapToggle.Draw(spriteBatch);
         saveFavorite.Draw(spriteBatch);
 
-        spriteBatch.DrawString(_uiFont, "Rent Heat Map", new Vector2(1000, 20), Color.Black);
-        spriteBatch.DrawString(_uiFont, "Radio Controls", new Vector2(20, 25), Color.Black);
-        spriteBatch.DrawString(_uiFont, "Amenities", new Vector2(1043, 220), Color.Black);
-        spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
-        spriteBatch.DrawString(_uiFont, "Save Favs", new Vector2(12, 400), Color.Black);
+        // Top-left radio panel
+        Rectangle radioPanel = new Rectangle(20, 35, 160, 90);
+        spriteBatch.Draw(_popupPixel, radioPanel, Color.Black * 0.55f);
 
+        spriteBatch.Draw(_popupPixel, new Rectangle(radioPanel.X, radioPanel.Y, radioPanel.Width, 2), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(radioPanel.X, radioPanel.Bottom - 2, radioPanel.Width, 2), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(radioPanel.X, radioPanel.Y, 2, radioPanel.Height), Color.White * 0.25f);
+        spriteBatch.Draw(_popupPixel, new Rectangle(radioPanel.Right - 2, radioPanel.Y, 2, radioPanel.Height), Color.White * 0.25f);
+
+        spriteBatch.DrawString(_uiFont, "Music", new Vector2(55, 42), Color.White);
+
+        _btnPrev.Draw(spriteBatch);
+        _btnPlayStop.Draw(spriteBatch);
+        _btnNext.Draw(spriteBatch);
+        
+        spriteBatch.DrawString(_uiFont, "West Campus Heat Map", new Vector2(400, 22), Color.Black);
+        //spriteBatch.DrawString(_uiFont, "Radio Controls", new Vector2(20, 25), Color.Black);
         if (_selectedBuilding != null)
         {
             DrawPopup(spriteBatch);
@@ -329,23 +350,96 @@ public class SceneMap : Scene
     }
 
     private void DrawPopup(SpriteBatch spriteBatch)
+{
+    int screenHeight = Game.Graphics.PreferredBackBufferHeight;
+
+    Rectangle cardRect = new Rectangle(35, screenHeight - 330, 420, 285);
+    
+    // Dark transparent card
+    spriteBatch.Draw(_popupPixel, cardRect, Color.Black * 0.72f);
+
+    // Soft border
+    spriteBatch.Draw(_popupPixel, new Rectangle(cardRect.X, cardRect.Y, cardRect.Width, 2), Color.White * 0.22f);
+    spriteBatch.Draw(_popupPixel, new Rectangle(cardRect.X, cardRect.Bottom - 2, cardRect.Width, 2), Color.White * 0.22f);
+    spriteBatch.Draw(_popupPixel, new Rectangle(cardRect.X, cardRect.Y, 2, cardRect.Height), Color.White * 0.22f);
+    spriteBatch.Draw(_popupPixel, new Rectangle(cardRect.Right - 2, cardRect.Y, 2, cardRect.Height), Color.White * 0.22f);
+    
+    // Divider lines inside the card
+    spriteBatch.Draw(
+        _popupPixel,
+        new Rectangle(cardRect.X + 25, cardRect.Y + 115, cardRect.Width - 50, 1),
+        Color.White * 0.18f
+    );
+    spriteBatch.Draw(
+        _popupPixel,
+        new Rectangle(cardRect.X + 25, cardRect.Y + 205, cardRect.Width - 50, 1),
+        Color.White * 0.18f
+    );
+
+    BuildingData building = Game.BuildingDataManager.GetBuilding(_selectedBuilding);
+
+    string title = building != null ? building.DisplayName.ToUpper() : _selectedBuilding;
+    string subtitle = building != null ? building.Subtitle : "West Campus Housing";
+    string rent = building != null ? building.RentText : "No rent data";
+    string amenities = building != null ? building.AmenitiesText : "No amenities data";
+
+    // Only show a shorter amenities preview
+    string amenitiesLine1 = GetAmenityLine(amenities, 0);
+    string amenitiesLine2 = GetAmenityLine(amenities, 1);
+    
+    bool isFavorited = Game.SaveManager.GetFavorites().Contains(_selectedBuilding);
+
+    int leftX = cardRect.X + 25;
+    int textX = cardRect.X + 35;
+
+    // Header
+    spriteBatch.DrawString(_uiFont, title, new Vector2(leftX, cardRect.Y + 18), Color.White);
+    spriteBatch.DrawString(_uiFont, subtitle, new Vector2(leftX, cardRect.Y + 52), Color.LightGray);
+
+    // Rent section
+    
+    spriteBatch.DrawString(_uiFont, "RENT", new Vector2(textX, cardRect.Y + 82), Color.LightGray);
+    spriteBatch.DrawString(_uiFont, rent, new Vector2(textX, cardRect.Y + 108), Color.White);
+
+    // Amenities section
+   
+    spriteBatch.DrawString(_uiFont, "AMENITIES", new Vector2(textX, cardRect.Y + 145), Color.LightGray);
+    spriteBatch.DrawString(_uiFont, amenitiesLine1, new Vector2(textX, cardRect.Y + 170), Color.White);
+    spriteBatch.DrawString(_uiFont, amenitiesLine2, new Vector2(textX, cardRect.Y + 202), Color.White);
+    
+    // Favorite section
+    string favoriteText = isFavorited ? "FAVORITED" : "NOT FAVORITED";
+    Color favoriteColor = isFavorited ? Color.Gold : Color.LightGray;
+
+   
+    spriteBatch.DrawString(_uiFont, favoriteText, new Vector2(textX, cardRect.Y + 238), favoriteColor);
+    starButton.Draw(spriteBatch);
+}
+    
+    private string GetAmenityLine(string amenities, int lineNumber)
     {
-        Rectangle popupRect = new Rectangle(30, 650, 320, 110);
-
-        spriteBatch.Draw(_popupPixel, popupRect, Color.White * 0.9f);
-        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, popupRect.Width, 2), Color.Black);
-        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Bottom - 2, popupRect.Width, 2), Color.Black);
-        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.X, popupRect.Y, 2, popupRect.Height), Color.Black);
-        spriteBatch.Draw(_popupPixel, new Rectangle(popupRect.Right - 2, popupRect.Y, 2, popupRect.Height), Color.Black);
-
-        BuildingData building = Game.BuildingDataManager.GetBuilding(_selectedBuilding);
-
-        string title = building != null ? building.DisplayName : _selectedBuilding;
-        string info = building != null ? building.PopupDescription : "No data available";
-
-        spriteBatch.DrawString(_uiFont, title, new Vector2(popupRect.X + 15, popupRect.Y + 12), Color.Black);
-        spriteBatch.DrawString(_uiFont, info, new Vector2(popupRect.X + 15, popupRect.Y + 50), Color.Black);
-
-        starButton.Draw(spriteBatch);
+        string[] parts = amenities.Split(',');
+        if (lineNumber == 0)
+        {
+            string result = "";
+            for (int i = 0; i < parts.Length && i < 2; i++)
+            {
+                if (i > 0)
+                {
+                    result += ", ";
+                }
+                result += parts[i].Trim();
+            }
+            return result;
+        }
+        if (lineNumber == 1)
+        {
+            if (parts.Length >= 3)
+            {
+                return parts[2].Trim();
+            }
+        }
+        return "";
     }
+    
 }

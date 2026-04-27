@@ -7,7 +7,9 @@
     "IsTallBuilding": false,
     "RentValue": 0.1,
     "AmenitiesValue": 0.1,
-    "PopupDescription": "Rent: $\nAmenities: Nothing"
+    "Subtitle": "West Campus Housing",
+    "RentText": "$1,000 - $1,075/mo",
+    "AmenitiesText": "Rooftop terrace, grilling area, lounge with firepit"
   },
   "BuildingB": {
     "Id": "BuildingB",
@@ -27,8 +29,11 @@
     "IsTallBuilding": true,
     "RentValue": 0.5,
     "AmenitiesValue": 0.5,
-    "PopupDescription": "Rent: $$\nAmenities: Pool, Gym"
+    "Subtitle": "West Campus Housing",
+    "RentText": "$1,319 - $1,720/mo",
+    "AmenitiesText": "Rooftop pool deck, outdoor terrace, jumbotron, fitness center, yoga studio, sauna, study rooms"
   },
+
   "BuildingD": {
     "Id": "BuildingD",
     "DisplayName": "The Mark",
@@ -37,26 +42,34 @@
     "IsTallBuilding": true,
     "RentValue": 0.7,
     "AmenitiesValue": 0.7,
-    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym, Sauna"
+    "Subtitle": "West Campus Housing",
+    "RentText": "$1,227 - $1,472/mo",
+    "AmenitiesText": "Rooftop pool, jumbotron, two-story fitness center, bowling alley, tanning and sauna, academic lounge, gaming room"
   },
+
   "BuildingE": {
     "Id": "BuildingE",
-    "DisplayName": "The Union",
+    "DisplayName": "The Union on 24th",
     "X": 775,
     "Y": 700,
     "IsTallBuilding": true,
     "RentValue": 0.7,
     "AmenitiesValue": 0.7,
-    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym, Sauna"
+    "Subtitle": "West Campus Housing",
+    "RentText": "$1,290 - $1,645/mo",
+    "AmenitiesText": "Rooftop pool, fitness center, yoga studio, fire pits, study rooms, outdoor courtyard"
   },
+
   "BuildingF": {
     "Id": "BuildingF",
-    "DisplayName": "Moon Tower",
+    "DisplayName": "Moontower",
     "X": 1150,
     "Y": 900,
     "IsTallBuilding": true,
     "RentValue": 0.6,
     "AmenitiesValue": 0.7,
-    "PopupDescription": "Rent: $$$\nAmenities: Pool, Gym"
+    "Subtitle": "West Campus Housing",
+    "RentText": "$1,255 - $1,600/mo",
+    "AmenitiesText": "Spin cycle studio, yoga studio, rooftop pool, fitness center, outdoor patio, study rooms"
   }
 }
