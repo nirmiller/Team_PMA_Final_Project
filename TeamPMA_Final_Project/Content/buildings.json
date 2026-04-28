@@ -7,9 +7,7 @@
     "IsTallBuilding": false,
     "RentValue": 0.1,
     "AmenitiesValue": 0.1,
-    "Subtitle": "West Campus Housing",
-    "RentText": "$1,000 - $1,075/mo",
-    "AmenitiesText": "Rooftop terrace, grilling area, lounge with firepit"
+    "PopupDescription": "Rent: $1000\nAmenities: Nothing"
   },
   "BuildingB": {
     "Id": "BuildingB",
@@ -19,7 +17,7 @@
     "IsTallBuilding": false,
     "RentValue": 0.2,
     "AmenitiesValue": 0.2,
-    "PopupDescription": "Rent: $$\nAmenities: Gym"
+    "PopupDescription": "Rent: $950\nAmenities: Gym"
   },
   "BuildingC": {
     "Id": "BuildingC",
@@ -29,11 +27,8 @@
     "IsTallBuilding": true,
     "RentValue": 0.5,
     "AmenitiesValue": 0.5,
-    "Subtitle": "West Campus Housing",
-    "RentText": "$1,319 - $1,720/mo",
-    "AmenitiesText": "Rooftop pool deck, outdoor terrace, jumbotron, fitness center, yoga studio, sauna, study rooms"
+    "PopupDescription": "Rent: $1400\nAmenities: Pool, Gym"
   },
-
   "BuildingD": {
     "Id": "BuildingD",
     "DisplayName": "The Mark",
@@ -42,34 +37,26 @@
     "IsTallBuilding": true,
     "RentValue": 0.7,
     "AmenitiesValue": 0.7,
-    "Subtitle": "West Campus Housing",
-    "RentText": "$1,227 - $1,472/mo",
-    "AmenitiesText": "Rooftop pool, jumbotron, two-story fitness center, bowling alley, tanning and sauna, academic lounge, gaming room"
+    "PopupDescription": "Rent: $1500\nAmenities: Pool, Gym, Sauna"
   },
-
   "BuildingE": {
     "Id": "BuildingE",
-    "DisplayName": "The Union on 24th",
+    "DisplayName": "The Union",
     "X": 775,
     "Y": 700,
     "IsTallBuilding": true,
     "RentValue": 0.7,
     "AmenitiesValue": 0.7,
-    "Subtitle": "West Campus Housing",
-    "RentText": "$1,290 - $1,645/mo",
-    "AmenitiesText": "Rooftop pool, fitness center, yoga studio, fire pits, study rooms, outdoor courtyard"
+    "PopupDescription": "Rent: $1700\nAmenities: Pool, Gym, Sauna"
   },
-
   "BuildingF": {
     "Id": "BuildingF",
-    "DisplayName": "Moontower",
+    "DisplayName": "Moon Tower",
     "X": 1150,
     "Y": 900,
     "IsTallBuilding": true,
     "RentValue": 0.6,
     "AmenitiesValue": 0.7,
-    "Subtitle": "West Campus Housing",
-    "RentText": "$1,255 - $1,600/mo",
-    "AmenitiesText": "Spin cycle studio, yoga studio, rooftop pool, fitness center, outdoor patio, study rooms"
+    "PopupDescription": "Rent: $1500\nAmenities: Pool, Gym"
   }
 }

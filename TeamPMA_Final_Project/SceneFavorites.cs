@@ -50,16 +50,26 @@ public class SceneFavorites : Scene
 
             BuildingData building = Game.BuildingDataManager.GetBuilding(buildingId);
 
-            string nameToDraw = building != null
-                ? building.DisplayName
-                : buildingId;
+            string textToDraw;
+
+            if (building != null)
+            {
+                textToDraw =
+                    building.DisplayName +
+                    " | Rent: " + building.RentValue +
+                    " | Amenities: " + building.AmenitiesValue;
+            }
+            else
+            {
+                textToDraw = buildingId;
+            }
 
             spriteBatch.DrawString(
-                _font,
-                nameToDraw,
-                new Vector2(50, 130 + i * 30),
-                Color.Black
-            );
+                    _font,
+                    textToDraw,
+                    new Vector2(50, 130 + i * 30),
+                    Color.Black
+                );
         }
     }
 }

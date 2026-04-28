@@ -5,7 +5,7 @@ The visualization is meant to aid incoming students with choosing the right apar
 We have several functionalities for the project, including: a music radio, a visual heat map that can be toggled with the side buttons, 
 a popup GUI that displays specific information about an apartment when pressed, a favorite/ save button that allows a user to save their favorite apartments, 
  a favorites scene, which displays a list of all favorite apartments. Data is brought into the program via a JSON file.
-
+//hello
 
 Nir: 
 
